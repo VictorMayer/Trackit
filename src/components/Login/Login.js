@@ -1,7 +1,11 @@
 import React from 'react'
 import styled from 'styled-components'
+import { useHistory } from 'react-router-dom'
 
 export default function Login({logo}){
+
+    const history = useHistory();
+
     return(
         <>
         <LoginPage>
@@ -9,7 +13,7 @@ export default function Login({logo}){
             <input placeholder="email"></input>
             <input placeholder="senha"></input>
             <button>Entrar</button>
-            <button class="sign-up">Não tem uma conta? Cadastre-se!</button>
+            <button onClick={()=>history.push("/signup")} class="sign-up">Não tem uma conta? Cadastre-se!</button>
         </LoginPage>
         </>
     )
