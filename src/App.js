@@ -17,7 +17,7 @@ export default function App(){
 
     const [user, setUser] = React.useState({});
     const [habits, setHabits] = React.useState([]);
-    const [percentage , setPercentage] = React.useState(10);
+    const [percentage , setPercentage] = React.useState(0);
     const [todayHabits, setTodayHabits] = React.useState([]);
 
     return(
