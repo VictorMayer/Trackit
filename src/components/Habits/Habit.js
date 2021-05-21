@@ -1,13 +1,18 @@
 import React,{useContext} from 'react'
 import styled from 'styled-components'
 import UserContext from '../../contexts/UserContext'
+import TodayContext from '../../contexts/TodayContext'
+import PercentageContext from '../../contexts/PercentageContext'
 import {BsTrash} from "react-icons/bs"
 import axios from 'axios'
 
 
 export default function Habit({habit, setHabits}){
-
+    
     const {user} = useContext(UserContext);
+    const {setTodayHabits} = useContext(TodayContext);
+    const {setPercentage} = useContext(PercentageContext);
+    const config = {headers: {"Authorization": `Bearer ${user.token}`}}
 
     function findDay(day){
         let flag=false;
@@ -22,33 +27,39 @@ export default function Habit({habit, setHabits}){
     function deleteHabit(id){
         let flag = window.confirm("\nSeu hábito será excluído e todo progresso será perdido. \n\n Tem certeza que quer continuar?");
         if(!flag)return;
-        const config = {
-            headers: {
-                "Authorization": `Bearer ${user.token}`
-            }
-        }
         const promisse = axios.delete("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/"+id,config);
         promisse.then((answer)=>{
             const consecutivePromisse = axios.get('https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits',config);
             consecutivePromisse.then(answer=>{
             setHabits(answer.data);
+            calculate();
             });
             consecutivePromisse.catch(answer=>console.log(answer.response));
         });
         promisse.catch(answer=>console.log(answer.response));
+    }
+    
+    function calculate(){
+        const promisse = axios.get("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/today",config)
+        promisse.then(answer=>{
+            const array = answer.data;
+            const newArray = array.filter((a)=>a.done);
+            setPercentage(newArray.length*100/array.length)
+            setTodayHabits(answer.data);
+        })
     }
 
     return(
         <HabitStyle>
             <p>{habit.name}</p>
             <div className="weekdays">
-                <div className={findDay(1)?"selected":""} >D</div>
-                <div className={findDay(2)?"selected":""} >S</div>
-                <div className={findDay(3)?"selected":""} >T</div>
+                <div className={findDay(0)?"selected":""} >D</div>
+                <div className={findDay(1)?"selected":""} >S</div>
+                <div className={findDay(2)?"selected":""} >T</div>
+                <div className={findDay(3)?"selected":""} >Q</div>
                 <div className={findDay(4)?"selected":""} >Q</div>
-                <div className={findDay(5)?"selected":""} >Q</div>
+                <div className={findDay(5)?"selected":""} >S</div>
                 <div className={findDay(6)?"selected":""} >S</div>
-                <div className={findDay(7)?"selected":""} >S</div>
             </div>
             <div className="trashcan" onClick={()=>deleteHabit(habit.id)}>
                 <BsTrash style={{ width:20, height:20,color: '#666'}}/>

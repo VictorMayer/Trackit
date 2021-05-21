@@ -21,7 +21,6 @@ export default function TodayHabit({todayHabit}){
         promisse.then(()=>{
             const consecutivePromisse = axios.get('https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/today',config);
             consecutivePromisse.then((answer)=>{
-                console.log(answer.data);
                 calculate(answer.data);
                 setTodayHabits(answer.data);
             });
@@ -33,7 +32,6 @@ export default function TodayHabit({todayHabit}){
     
     function calculate(array){
         const newArray = array.filter((a)=>a.done);
-        console.log(newArray);
         setPercentage(newArray.length*100/array.length)
     }
 

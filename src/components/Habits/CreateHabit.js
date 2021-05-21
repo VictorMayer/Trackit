@@ -2,6 +2,8 @@ import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import React, {useContext} from 'react'
 import UserContext from '../../contexts/UserContext'
 import HabitsContext from '../../contexts/HabitsContext'
+import TodayContext from '../../contexts/TodayContext'
+import PercentageContext from '../../contexts/PercentageContext'
 import styled from 'styled-components'
 import axios from 'axios'
 import Loader from 'react-loader-spinner'
@@ -10,6 +12,8 @@ export default function CreateHabit({setCreateHabit, days, setDays, habitName, s
 
     const {user} = useContext(UserContext);
     const {habits,setHabits} = useContext(HabitsContext);
+    const {setTodayHabits} = useContext(TodayContext);
+    const {setPercentage} = useContext(PercentageContext);
     const [loader, setLoader] = React.useState(false);
 
     function saveHabit(){
@@ -17,7 +21,7 @@ export default function CreateHabit({setCreateHabit, days, setDays, habitName, s
         const daysArray=[];
         days.forEach((d,i)=>{
             if(d){
-                daysArray.push(i+1);
+                daysArray.push(i);
             }
         })
         if(daysArray.length === 0){
@@ -41,11 +45,22 @@ export default function CreateHabit({setCreateHabit, days, setDays, habitName, s
             setDays([]);
             setHabitName("");
             setCreateHabit(false);
+            const consecutivePromisse = axios.get('https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/today',config);
+            consecutivePromisse.then((answer)=>{
+                calculate(answer.data);
+                setTodayHabits(answer.data);
+            });
         });
         promisse.catch((answer)=>{
             console.log(answer.response)
+            alert("Error:  "+answer.response.data.details)
             setLoader(false);
         });
+    }
+
+    function calculate(array){
+        const newArray = array.filter((a)=>a.done);
+        setPercentage(newArray.length*100/array.length)
     }
 
     return(

@@ -2,6 +2,7 @@ import React, {useContext} from 'react'
 import styled from 'styled-components'
 import UserContext from '../../contexts/UserContext'
 import TodayContext from '../../contexts/TodayContext'
+import PercentageContext from '../../contexts/PercentageContext'
 import { useHistory } from 'react-router-dom'
 import axios from 'axios'
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
@@ -15,6 +16,7 @@ export default function Login({logo}){
     const [loader, setLoader] = React.useState(false);
     const {setUser} = useContext(UserContext);
     const {setTodayHabits} = useContext(TodayContext);
+    const {setPercentage} = useContext(PercentageContext);
 
     function logIn(event){
         event.preventDefault();
@@ -31,7 +33,6 @@ export default function Login({logo}){
 
     function loginSucessful(data){
         setLoader(false)
-        console.log(data)
         setUser(data);
         const config = {
             headers: {
@@ -40,7 +41,7 @@ export default function Login({logo}){
         }
         const promisse = axios.get("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/today",config)
         promisse.then(answer=>{
-            console.log(answer.data);
+            calculate(answer.data);
             setTodayHabits(answer.data);
             history.push("/today");
         })
@@ -56,6 +57,11 @@ export default function Login({logo}){
         if(response.status===422){
             alert("Error:  "+response.data.details)
         }
+    }
+
+    function calculate(array){
+        const newArray = array.filter((a)=>a.done);
+        setPercentage(newArray.length*100/array.length)
     }
 
     return(

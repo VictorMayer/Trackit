@@ -36,9 +36,9 @@ export default function TodayPage(){
 const TodayStyles=styled.div`
 
     width:100vw;
-    height:calc(100vh - 140px);
+    min-height:calc(100vh - 140px);
     margin: 70px 0px;
-    padding:28px 18px 0px 18px;
+    padding:28px 18px 35px 18px;
     background:#F2F2F2;
     font-family: 'Lexend Deca', sans-serif;
 

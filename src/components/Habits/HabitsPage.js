@@ -51,7 +51,7 @@ const HabitsPageStyle=styled.div`
     width:100vw;
     min-height:calc(100vh - 140px);
     margin: 70px 0px 70px 0px;
-    padding:28px 18px 30px 18px;
+    padding:28px 18px 35px 18px;
     background:#F2F2F2;
     font-family: 'Lexend Deca', sans-serif;
 

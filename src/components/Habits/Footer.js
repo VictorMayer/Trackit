@@ -15,7 +15,7 @@ export default function Footer(){
     const {user} = useContext(UserContext);
     const {setTodayHabits} = useContext(TodayContext);
     const {setHabits} = useContext(HabitsContext);
-    const {percentage} = useContext(PercentageContext)
+    const {percentage, setPercentage} = useContext(PercentageContext);
 
     function goToTodayPage(){
         const config = {
@@ -25,8 +25,15 @@ export default function Footer(){
         }
         const promisse = axios.get("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/today",config)
         promisse.then(answer=>{
+            calculate(answer.data);
             setTodayHabits(answer.data);
             history.push("/today");
+        })
+        promisse.catch((answer)=>{
+            if(answer.response.status===401){
+                alert("Você foi deslogado!");
+                history.push("/");
+            }
         })
     }
 
@@ -41,8 +48,18 @@ export default function Footer(){
             setHabits(answer.data);
             history.push("/habits");
         })
+        promisse.catch((answer)=>{
+            if(answer.response.status===401){
+                alert("Você foi deslogado!");
+                history.push("/");
+            }
+        })
     }
-
+    
+    function calculate(array){
+        const newArray = array.filter((a)=>a.done);
+        setPercentage(newArray.length*100/array.length)
+    }
 
     return(
         <FooterStyles>
