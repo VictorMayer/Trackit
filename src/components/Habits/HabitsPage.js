@@ -1,29 +1,44 @@
-import React from 'react'
+import React, {useContext} from 'react'
 import styled from 'styled-components'
 import { IoIosAdd } from "react-icons/io";
-
+import HabitsContext from '../../contexts/HabitsContext'
 
 import Navbar from './Navbar'
 import CreateHabit from './CreateHabit'        
 import Habit from './Habit'
 import Footer from './Footer'
 
+
 export default function HabitsPage(){
 
+    const {habits,setHabits} = useContext(HabitsContext);
+    const [createHabit, setCreateHabit] = React.useState(false);
+    const [days, setDays] = React.useState([false,false,false,false,false,false,false]);
+    const [habitName, setHabitName] = React.useState("");
+    
     return(
     <>
         <Navbar/>
         <HabitsPageStyle>
             <div className="my-habits">
                 <p>Meus hábitos</p>
-                <div onClick={()=>(console.log("adicione hábito!"))} className="icon-container">
+                <div onClick={()=>(setCreateHabit(true))} className="icon-container">
                     <IoIosAdd style={{ width:40, height:34,color: '#f2f2f2' }}/>
                 </div>
             </div>
+            
+            {createHabit ? (<CreateHabit setCreateHabit={setCreateHabit} days={days} setDays={setDays} habitName={habitName} setHabitName={setHabitName}/>): (<></>)}
 
-            <CreateHabit/>
+            {habits.length>0 ?
+            (<>
+            {habits.map((habit,i)=>(<Habit key={i} habit={habit} setHabits={setHabits}/>))} 
+            </>) 
+            : 
+            (<>
             <p>Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para começar a trackear!</p>
-            <Habit/> 
+            </>)}
+
+            
 
         </HabitsPageStyle>
         <Footer/>
@@ -34,11 +49,12 @@ export default function HabitsPage(){
 const HabitsPageStyle=styled.div`
 
     width:100vw;
-    height:calc(100vh - 140px);
-    margin: 70px 0px;
-    padding:28px 18px 0px 18px;
+    min-height:calc(100vh - 140px);
+    margin: 70px 0px 70px 0px;
+    padding:28px 18px 30px 18px;
     background:#F2F2F2;
     font-family: 'Lexend Deca', sans-serif;
+
     
     .my-habits{
         display:flex;

@@ -1,22 +1,32 @@
+import React, {useContext} from 'react'
 import styled from 'styled-components'
+import dayjs from 'dayjs'
+import TodayContext from '../../contexts/TodayContext'
+import PercentageContext from '../../contexts/PercentageContext'
 
 import Navbar from './Navbar'
 import TodayHabit from './TodayHabit'
 import Footer from './Footer'
 
 export default function TodayPage(){
+
+    require('dayjs/locale/pt-br');    
+    const {todayHabits} = useContext(TodayContext);
+    const {percentage} = useContext(PercentageContext);
+    
     return(
         <>
         <Navbar/>
-        <TodayStyles>
+        <TodayStyles percentage={percentage}>
             <header>
-                <p>Segunda, 17/05</p>
-                <p>Nenhum hábito concluído ainda</p>
+                <p>{`${dayjs().locale('pt-br').format('dddd')}, ${dayjs().locale('pt-br').format('DD/MM')}`}</p>
+                <p>{percentage === 0 ? "Nenhum hábito concluído ainda" : `${percentage.toFixed(0)}% dos hábitos concluídos`}</p>
             </header>
-
-            <TodayHabit/>
-            <TodayHabit/>
             
+            {todayHabits.map((todayHabit, i)=>(
+                <TodayHabit key={i} todayHabit={todayHabit}/>
+            ))}
+
         </TodayStyles>
         <Footer/>
         </>
@@ -39,7 +49,7 @@ const TodayStyles=styled.div`
 
         p:last-child{
             font-size:18px;
-            color:#bababa;
+            color:${props => props.percentage === 0 ? "#bababa" : "#8FC549" };
             margin-top:7px;
         }
     }

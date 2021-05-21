@@ -1,15 +1,18 @@
 import styled from 'styled-components'
 import headerLogo from './../../img/header-logo.png'
+import React, {useContext} from 'react'
+import UserContext from '../../contexts/UserContext'
 
 export default function Navbar(){
 
+    const {user} = useContext(UserContext);
     //functions
 
     return(
         <NavbarStyles>
             <img src={headerLogo} alt="app logo"/>
             <div className="profile-picture" >
-                <img src="https://image.freepik.com/free-vector/profile-icon-male-avatar-hipster-man-wear-headphones_48369-8728.jpg" alt="profile" />
+                <img src={user.image} alt="profile" />
             </div>
         </NavbarStyles>
     )
@@ -18,6 +21,7 @@ export default function Navbar(){
 const NavbarStyles = styled.div`
 
     position:fixed;
+    z-index:10;
     top:0;
     left:0;
     display:flex;

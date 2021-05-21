@@ -1,21 +1,68 @@
+import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
+import React, {useContext} from 'react'
+import UserContext from '../../contexts/UserContext'
+import HabitsContext from '../../contexts/HabitsContext'
 import styled from 'styled-components'
+import axios from 'axios'
+import Loader from 'react-loader-spinner'
 
-export default function CreateHabit(){
+export default function CreateHabit({setCreateHabit, days, setDays, habitName, setHabitName}){
+
+    const {user} = useContext(UserContext);
+    const {habits,setHabits} = useContext(HabitsContext);
+    const [loader, setLoader] = React.useState(false);
+
+    function saveHabit(){
+        setLoader(true);
+        const daysArray=[];
+        days.forEach((d,i)=>{
+            if(d){
+                daysArray.push(i+1);
+            }
+        })
+        if(daysArray.length === 0){
+            setLoader(false);
+            alert("Selecione o(s) dia(s) em que se deve realizar seu novo hábito");
+            return;
+        }
+        const config = {
+            headers: {
+                "Authorization": `Bearer ${user.token}`
+            }
+        }
+        const body = {
+            name: habitName,
+            days: daysArray
+        }
+        const promisse = axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits",body,config);
+        promisse.then((answer)=>{
+            setLoader(false);
+            setHabits([...habits,answer.data]);
+            setDays([]);
+            setHabitName("");
+            setCreateHabit(false);
+        });
+        promisse.catch((answer)=>{
+            console.log(answer.response)
+            setLoader(false);
+        });
+    }
+
     return(
         <CreateHabitStyles>
-            <input placeholder="nome do hábito"></input>
+            <input disabled={loader} placeholder="nome do hábito" value={habitName} onChange={(e)=>setHabitName(e.target.value)} ></input>
             <div className="weekdays">
-                <button>D</button>
-                <button>S</button>
-                <button>T</button>
-                <button>Q</button>
-                <button>Q</button>
-                <button>S</button>
-                <button>S</button>
+                <button disabled={loader} onClick={()=>{days[0]=!days[0];setDays([...days])}} className={days[0]?"selected":""}>D</button>
+                <button disabled={loader} onClick={()=>{days[1]=!days[1];setDays([...days])}} className={days[1]?"selected":""}>S</button>
+                <button disabled={loader} onClick={()=>{days[2]=!days[2];setDays([...days])}} className={days[2]?"selected":""}>T</button>
+                <button disabled={loader} onClick={()=>{days[3]=!days[3];setDays([...days])}} className={days[3]?"selected":""}>Q</button>
+                <button disabled={loader} onClick={()=>{days[4]=!days[4];setDays([...days])}} className={days[4]?"selected":""}>Q</button>
+                <button disabled={loader} onClick={()=>{days[5]=!days[5];setDays([...days])}} className={days[5]?"selected":""}>S</button>
+                <button disabled={loader} onClick={()=>{days[6]=!days[6];setDays([...days])}} className={days[6]?"selected":""}>S</button>
             </div>
             <div className="menu">
-                <button>Cancelar</button>
-                <button>Salvar</button>
+                <button onClick={()=>setCreateHabit(false)} >Cancelar</button>
+                <button onClick={saveHabit} >{loader ? <Loader type="ThreeDots" color="#fff" height={15} width={50}/> : "Salvar"}</button>
             </div>
         </CreateHabitStyles>
     )
@@ -57,6 +104,11 @@ const CreateHabitStyles = styled.div`
             border:1px solid #dbdbdb;
             margin-right:4px;
             color:#dbdbdb;
+
+        }
+        .selected{
+            color:#fff;
+            background:#dbdbdb;
         }
     }
 

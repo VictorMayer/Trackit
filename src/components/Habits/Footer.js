@@ -1,32 +1,61 @@
-import React from 'react';
+import React,{useContext} from 'react';
+import UserContext from '../../contexts/UserContext';
+import TodayContext from '../../contexts/TodayContext';
+import HabitsContext from '../../contexts/HabitsContext';
+import PercentageContext from '../../contexts/PercentageContext'
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
-import 'react-circular-progressbar/dist/styles.css'
-import styled from 'styled-components'
-import { useHistory } from 'react-router-dom'
+import 'react-circular-progressbar/dist/styles.css';
+import styled from 'styled-components';
+import { useHistory } from 'react-router-dom';
+import axios from 'axios';
 
 export default function Footer(){
 
-    //functions
-    const [percentage,setPercentage] = React.useState(0);
     const history = useHistory();
+    const {user} = useContext(UserContext);
+    const {setTodayHabits} = useContext(TodayContext);
+    const {setHabits} = useContext(HabitsContext);
+    const {percentage} = useContext(PercentageContext)
+
+    function goToTodayPage(){
+        const config = {
+            headers: {
+                "Authorization": `Bearer ${user.token}`
+            }
+        }
+        const promisse = axios.get("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/today",config)
+        promisse.then(answer=>{
+            setTodayHabits(answer.data);
+            history.push("/today");
+        })
+    }
+
+    function goToHabitsPage(){
+        const config = {
+            headers: {
+                "Authorization": `Bearer ${user.token}`
+            }
+        }
+        const promisse = axios.get("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits",config)
+        promisse.then(answer=>{
+            setHabits(answer.data);
+            history.push("/habits");
+        })
+    }
+
 
     return(
         <FooterStyles>
-            <button onClick={()=>(history.push("/habits"))} >Hábitos</button>
+            <button onClick={goToHabitsPage} >Hábitos</button>
             <div className="progressbar-container">
-                <div className="progressbar"  onClick={()=>(history.push("/today"))} style={{ 
-                    textColor: '#fff',
-                    backgroundColor: '#52B6FF',
-                    borderRadius:'50%',
-                    pathTransitionDuration: 0.3,
-
-                    }}>
-                    <CircularProgressbar value={percentage} style={buildStyles({
-                        width:100,
-                        height:100,
-                        
+                <div className="progressbar"  onClick={goToTodayPage}>
+                    <CircularProgressbar value={percentage} styles={buildStyles({
+                        backgroundColor: '#52B6FF',
+                        trailColor:"#52B6FF",
+                        textColor:"#fff",
+                        pathColor:'#fff'
                     })} 
-                    text="Hoje"></CircularProgressbar>
+                    background backgroundPadding={5} text="Hoje"></CircularProgressbar>
                 </div>
             </div>
             <button onClick={()=>(history.push("/history"))} >Histórico</button>
@@ -55,6 +84,7 @@ const FooterStyles=styled.div`
         height:91px;
         background:#52B6FF;
         color:#fff;
+        border-radius:50%;
     }
 
     button{
